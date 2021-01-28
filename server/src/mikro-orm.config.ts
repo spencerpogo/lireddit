@@ -2,9 +2,10 @@ import { MikroORM } from "@mikro-orm/core";
 import path from "path";
 import { __PROD__ } from "./constants";
 import { Post } from "./entities/Post";
+import { User } from "./entities/User";
 
 export const MIKRO_CONFIG: Parameters<typeof MikroORM.init>[0] = {
-  entities: [Post],
+  entities: [Post, User],
   type: "postgresql",
   debug: !__PROD__,
   migrations: {
