@@ -96,7 +96,24 @@ export class UserResolver {
       username,
       password: hashedPassword,
     });
-    await em.persistAndFlush(user);
+    try {
+      await em.persistAndFlush(user);
+    } catch (e) {
+      // Check for "unique_violation" error
+      if (e && e.code === "23505") {
+        // Username is the only unique field
+        return {
+          errors: [
+            {
+              field: "username",
+              message: "Username is already taken",
+            },
+          ],
+        };
+      }
+      // Don't swallow real errors
+      throw e;
+    }
     return { user };
   }
 
