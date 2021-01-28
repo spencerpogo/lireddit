@@ -5,6 +5,8 @@ import { buildSchema } from "type-graphql";
 import { __PROD__ } from "./constants";
 import MIKRO_CONFIG from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
+import { PostResolver } from "./resolvers/post";
+import { MyContext } from "./types";
 
 async function main() {
   const orm = await MikroORM.init(MIKRO_CONFIG);
@@ -13,12 +15,13 @@ async function main() {
   const app = express();
 
   const schema = await buildSchema({
-    resolvers: [HelloResolver],
+    resolvers: [HelloResolver, PostResolver],
     validate: false,
   });
   const apolloServer = new ApolloServer({
     schema,
     tracing: !__PROD__,
+    context: (): MyContext => ({ em: orm.em }),
   });
 
   apolloServer.applyMiddleware({ app });
