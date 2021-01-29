@@ -3,6 +3,7 @@ import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import express from "express";
 import session from "express-session";
+import getenv from "getenv";
 import redis from "redis";
 import { buildSchema } from "type-graphql";
 import { __PROD__ } from "./constants";
@@ -13,12 +14,15 @@ import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 
 async function main() {
-  const SESSION_SECRET = process.env.LIREDDIT_SESSION_SECRET;
-  if (!SESSION_SECRET) {
-    throw new Error("Missing LIREDDIT_SESSION_SECRET environment variable");
-  }
+  const SESSION_SECRET = getenv("LIREDDIT_SESSION_SECRET");
 
-  const orm = await MikroORM.init(MIKRO_CONFIG);
+  const orm = await MikroORM.init({
+    ...MIKRO_CONFIG,
+    type: "postgresql",
+    dbName: getenv("LIREDDIT_DB_DATABASE"),
+    user: getenv("LIREDDIT_DB_USER"),
+    password: getenv("LIREDDIT_DB_PWD"),
+  });
   await orm.getMigrator().up();
 
   const app = express();
@@ -41,6 +45,7 @@ async function main() {
         secure: __PROD__, // Should cookie only work over HTTPS
       },
       secret: SESSION_SECRET,
+      saveUninitialized: false,
       resave: false,
     })
   );
@@ -57,8 +62,10 @@ async function main() {
 
   apolloServer.applyMiddleware({ app });
 
-  app.listen(4000, () => {
-    console.log("Server started on http://localhost:4000");
+  const port = getenv.int("LIREDDIT_PORT", 4000);
+  const iface = getenv("LIREDDIT_IFACE", "127.0.0.1");
+  app.listen(port, iface, () => {
+    console.log(`Server started on http://${iface}:${port}`);
   });
 }
 
