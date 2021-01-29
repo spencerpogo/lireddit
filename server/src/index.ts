@@ -52,7 +52,7 @@ async function main() {
   const apolloServer = new ApolloServer({
     schema,
     tracing: !__PROD__,
-    context: (): MyContext => ({ em: orm.em }),
+    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
   });
 
   apolloServer.applyMiddleware({ app });
