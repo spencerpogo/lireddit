@@ -1,12 +1,15 @@
-import { Box, Button } from "@chakra-ui/react";
+import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
+import { Box, Button, IconButton, InputRightElement } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
-import React, { FC } from "react";
+import { FC, useState } from "react";
 import InputField from "src/components/InputField";
 import Wrapper from "src/components/Wrapper";
 
 export interface RegisterProps {}
 
 export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
+  const [passwordShown, setPasswordShown] = useState<boolean>(false);
+
   return (
     <Wrapper small={true}>
       <Formik
@@ -25,8 +28,21 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
                 name="password"
                 placeholder="password"
                 label="Password"
-                type="password"
-              />
+                type={passwordShown ? "text" : "password"}
+                pr="1.5rem"
+              >
+                <InputRightElement width="1.5rem">
+                  <IconButton
+                    aria-label={
+                      passwordShown ? "Hide password" : "Show password"
+                    }
+                    icon={passwordShown ? <ViewOffIcon /> : <ViewIcon />}
+                    h="1.75rem"
+                    size="xs"
+                    onClick={() => setPasswordShown((v) => !v)}
+                  />
+                </InputRightElement>
+              </InputField>
             </Box>
             <Button
               colorScheme="blue"
