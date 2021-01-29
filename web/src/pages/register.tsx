@@ -29,7 +29,7 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
                 placeholder="password"
                 label="Password"
                 type={passwordShown ? "text" : "password"}
-                pr="1.5rem"
+                chakraProps={{ pr: "1.5rem" }}
               >
                 <InputRightElement width="1.5rem">
                   <IconButton

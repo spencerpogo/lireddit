@@ -7,16 +7,19 @@ import {
   InputProps,
 } from "@chakra-ui/react";
 import { useField } from "formik";
-import React, { FC, PropsWithChildren } from "react";
+import React, { FC, InputHTMLAttributes, PropsWithChildren } from "react";
 
-export type InputFieldProps = InputProps & {
+export type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
   name: string;
   label: string;
+  chakraProps?: InputProps;
 };
 
 export const InputField: FC<InputFieldProps> = ({
   label,
   children,
+  size: _,
+  chakraProps = {},
   ...props
 }: PropsWithChildren<InputFieldProps>) => {
   const [field, { error }] = useField(props);
@@ -25,7 +28,7 @@ export const InputField: FC<InputFieldProps> = ({
     <FormControl isInvalid={!!error}>
       <FormLabel htmlFor={field.name}>{label}</FormLabel>
       <InputGroup size="md">
-        <Input {...field} {...props} id={field.name} />
+        <Input {...field} {...props} {...chakraProps} id={field.name} />
         {children}
       </InputGroup>
       {error ? <FormErrorMessage>{error}</FormErrorMessage> : null}
