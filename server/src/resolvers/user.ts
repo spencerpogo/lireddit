@@ -69,7 +69,7 @@ export class UserResolver {
   async register(
     @Arg("options")
     { username, password }: UsernamePasswordInput,
-    @Ctx() { em }: MyContext
+    @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     if (username.length <= 2) {
       return {
@@ -126,6 +126,9 @@ export class UserResolver {
       // Don't swallow real errors
       throw e;
     }
+
+    req.session.userId = user.id;
+
     return { user };
   }
 
