@@ -1,40 +1,34 @@
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Box, Button, IconButton, InputRightElement } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
+import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import InputField from "src/components/InputField";
 import Wrapper from "src/components/Wrapper";
-import { useMutation } from "urql";
+import { useRegisterMutation } from "src/generated/graphql";
+import { toErrorMap } from "src/utils/toErrorMap";
 
 export interface RegisterProps {}
 
-const REGISTER_MUTATION = `mutation Register($username: String!, $password: String!) {
-  register(options: { username: $username, password: $password }) {
-    user {
-      username
-      id
-      createdAt
-      updatedAt
-    }
-    errors {
-      field
-      message
-    }
-  }
-}
-`;
-
 export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
-  const [, register] = useMutation(REGISTER_MUTATION);
+  const router = useRouter();
+  const [, register] = useRegisterMutation();
   const [passwordShown, setPasswordShown] = useState<boolean>(false);
 
   return (
     <Wrapper small={true}>
       <Formik
         initialValues={{ username: "", password: "" }}
-        onSubmit={(values) => {
+        onSubmit={async (values, { setErrors }) => {
           console.log(values);
-          return register(values);
+          const response = await register(values);
+          if (response.data?.register.errors) {
+            setErrors(toErrorMap(response.data.register.errors));
+          } else if (response.data?.register.user) {
+            router.push("/");
+          } else {
+            setErrors({ username: "Unexpected response from server" });
+          }
         }}
       >
         {({ values, handleChange, isSubmitting }) => (

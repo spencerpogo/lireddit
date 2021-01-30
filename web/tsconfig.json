@@ -4,11 +4,7 @@
     "outDir": "build/dist",
     "module": "esnext",
     "target": "es5",
-    "lib": [
-      "es6",
-      "dom",
-      "esnext.asynciterable"
-    ],
+    "lib": ["es6", "dom", "esnext.asynciterable"],
     "sourceMap": true,
     "allowJs": true,
     "jsx": "preserve",
@@ -22,7 +18,7 @@
     "suppressImplicitAnyIndexErrors": true,
     "noUnusedLocals": true,
     "skipLibCheck": true,
-    "strict": false,
+    "strict": true,
     "noEmit": true,
     "esModuleInterop": true,
     "resolveJsonModule": true,
@@ -37,9 +33,5 @@
     "jest",
     "src/setupTests.ts"
   ],
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ]
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"]
 }
