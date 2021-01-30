@@ -6,7 +6,7 @@ import session from "express-session";
 import getenv from "getenv";
 import redis from "redis";
 import { buildSchema } from "type-graphql";
-import { __PROD__ } from "./constants";
+import { COOKIE_NAME, __PROD__ } from "./constants";
 import MIKRO_CONFIG from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
@@ -32,7 +32,7 @@ async function main() {
 
   app.use(
     session({
-      name: "qid",
+      name: COOKIE_NAME,
       store: new RedisStore({
         client: redisClient,
         disableTouch: true,
