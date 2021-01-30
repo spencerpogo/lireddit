@@ -72,7 +72,7 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
               width="100%"
               type="submit"
             >
-              Submit
+              Register
             </Button>
           </Form>
         )}
