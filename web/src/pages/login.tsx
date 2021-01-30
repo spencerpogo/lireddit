@@ -5,14 +5,14 @@ import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import InputField from "src/components/InputField";
 import Wrapper from "src/components/Wrapper";
-import { useRegisterMutation } from "src/generated/graphql";
+import { useLoginMutation } from "src/generated/graphql";
 import { toErrorMap } from "src/utils/toErrorMap";
 
-export interface RegisterProps {}
+export interface LoginProps {}
 
-export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
+export const Login: FC<LoginProps> = ({}: LoginProps) => {
   const router = useRouter();
-  const [, register] = useRegisterMutation();
+  const [, login] = useLoginMutation();
   const [passwordShown, setPasswordShown] = useState<boolean>(false);
 
   return (
@@ -21,10 +21,10 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
         initialValues={{ username: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
           console.log(values);
-          const response = await register(values);
-          if (response.data?.register.errors) {
-            setErrors(toErrorMap(response.data.register.errors));
-          } else if (response.data?.register.user) {
+          const response = await login(values);
+          if (response.data?.login.errors) {
+            setErrors(toErrorMap(response.data.login.errors));
+          } else if (response.data?.login.user) {
             router.push("/");
           } else {
             setErrors({ username: "Unexpected response from server" });
@@ -66,7 +66,7 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
               width="100%"
               type="submit"
             >
-              Register
+              Login
             </Button>
           </Form>
         )}
@@ -75,4 +75,4 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
   );
 };
 
-export default Register;
+export default Login;
