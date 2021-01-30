@@ -1,3 +1,4 @@
+import { EntityManager } from "@mikro-orm/postgresql";
 import argon2 from "argon2";
 import {
   Arg,
@@ -104,12 +105,20 @@ export class UserResolver {
     }
 
     const hashedPassword = await argon2.hash(password, argon2Config);
-    const user = await em.create(User, {
-      username,
-      password: hashedPassword,
-    });
+    let user;
+
     try {
-      await em.persistAndFlush(user);
+      const result = await (em as EntityManager<any>)
+        .createQueryBuilder(User)
+        .getKnexQuery()
+        .insert({
+          username,
+          password: hashedPassword,
+          created_at: new Date(),
+          updated_at: new Date(),
+        })
+        .returning("*");
+      user = result[0];
     } catch (e) {
       // Check for "unique_violation" error
       if (e && e.code === "23505") {
@@ -127,6 +136,11 @@ export class UserResolver {
       throw e;
     }
 
+    user = {
+      ...user,
+      createdAt: user.created_at,
+      updatedAt: user.updated_at,
+    };
     req.session.userId = user.id;
 
     return { user };
