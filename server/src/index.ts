@@ -1,7 +1,6 @@
 import { MikroORM } from "@mikro-orm/core";
 import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
-import cors from "cors";
 import express from "express";
 import session from "express-session";
 import getenv from "getenv";
@@ -27,14 +26,6 @@ async function main() {
   await orm.getMigrator().up();
 
   const app = express();
-
-  app.use(
-    cors({
-      // TODO: Use an environment variable to set this
-      origin: "localhost:3000",
-      credentials: true,
-    })
-  );
 
   const RedisStore = connectRedis(session);
   const redisClient = redis.createClient();
@@ -69,7 +60,10 @@ async function main() {
     context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
   });
 
-  apolloServer.applyMiddleware({ app });
+  apolloServer.applyMiddleware({
+    app,
+    cors: { origin: "http://localhost:3000", credentials: true },
+  });
 
   const port = getenv.int("LIREDDIT_PORT", 4000);
   const iface = getenv("LIREDDIT_IFACE", "127.0.0.1");
