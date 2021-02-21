@@ -1,11 +1,13 @@
 import { ViewIcon, ViewOffIcon } from "@chakra-ui/icons";
 import { Box, Button, IconButton, InputRightElement } from "@chakra-ui/react";
 import { Form, Formik } from "formik";
+import { withUrqlClient } from "next-urql";
 import { useRouter } from "next/router";
 import { FC, useState } from "react";
 import InputField from "src/components/InputField";
 import Wrapper from "src/components/Wrapper";
 import { useLoginMutation } from "src/generated/graphql";
+import { createUrqlClient } from "src/utils/createUrqlClient";
 import { toErrorMap } from "src/utils/toErrorMap";
 
 export interface LoginProps {}
@@ -75,4 +77,4 @@ export const Login: FC<LoginProps> = ({}: LoginProps) => {
   );
 };
 
-export default Login;
+export default withUrqlClient(createUrqlClient)(Login);
