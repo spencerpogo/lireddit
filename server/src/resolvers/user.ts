@@ -4,7 +4,6 @@ import {
   Arg,
   Ctx,
   Field,
-  InputType,
   Mutation,
   ObjectType,
   Query,
@@ -13,6 +12,7 @@ import {
 import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
+import { UsernamePasswordInput } from "../types/UsernamePasswordInput";
 import { validateEmail } from "../utils/validateEmail";
 
 // Benchmark time for 1 hash:
@@ -27,18 +27,6 @@ const argon2Config: argon2.Options & { raw: false } = {
   timeCost: 512,
   raw: false,
 };
-
-@InputType()
-export class UsernamePasswordInput {
-  @Field()
-  email: string;
-
-  @Field()
-  username: string;
-
-  @Field()
-  password: string;
-}
 
 @ObjectType()
 export class FieldError {
