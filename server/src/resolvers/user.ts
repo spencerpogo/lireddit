@@ -91,6 +91,12 @@ export class UserResolver {
         message: "Username must be shorter than 50 characters",
       });
     }
+    if (username.includes("@")) {
+      errors.push({
+        field: "username",
+        message: "Username cannot include an @ sign",
+      });
+    }
 
     if (password.length <= 3) {
       errors.push({
@@ -140,20 +146,27 @@ export class UserResolver {
     return { user };
   }
 
-  // TODO: Allow login with email instead of username?
   @Mutation(() => UserResponse)
   async login(
-    @Arg("options") { username, password }: UsernamePasswordInput,
+    @Arg("usernameOrEmail") usernameOrEmail: string,
+    @Arg("password") password: string,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const user = await em.findOne(User, { username });
+    const user = await em.findOne(
+      User,
+      // Emails must have an @ and usernames must not according to validation logic
+      usernameOrEmail.includes("@")
+        ? { email: normalizeEmail(usernameOrEmail) }
+        : { username: usernameOrEmail }
+    );
+
     if (!user) {
       // This allows enumeration of usernames, but profiles are public anyway so it's
       //  not a security problem
       return {
         errors: [
           {
-            field: "username",
+            field: "usernameOrEmail",
             message: "That username doesn't exist",
           },
         ],
