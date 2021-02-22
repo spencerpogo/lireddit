@@ -76,45 +76,35 @@ export class UserResolver {
     { email, username, password }: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
+    const errors = [];
+
     if (username.length <= 2) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Username must be at least 3 characters",
-          },
-        ],
-      };
+      errors.push({
+        field: "username",
+        message: "Username must be at least 3 characters",
+      });
     }
     if (username.length >= 50) {
-      return {
-        errors: [
-          {
-            field: "username",
-            message: "Username must be shorter than 50 characters",
-          },
-        ],
-      };
+      errors.push({
+        field: "username",
+        message: "Username must be shorter than 50 characters",
+      });
     }
 
     if (password.length <= 3) {
-      return {
-        errors: [
-          {
-            field: "password",
-            message: "Password must be at least 4 characters",
-          },
-        ],
-      };
+      errors.push({
+        field: "password",
+        message: "Password must be at least 4 characters",
+      });
     }
 
     // TODO: Check for gmail-style plus sign duplication
     // https://www.npmjs.com/package/normalize-email
     if (!validateEmail(email)) {
-      return {
-        errors: [{ field: "email", message: "Invalid email" }],
-      };
+      errors.push({ field: "email", message: "Invalid email" });
     }
+
+    if (errors.length) return { errors };
 
     const hashedPassword = await argon2.hash(password, argon2Config);
     const user = await em.create(User, {
