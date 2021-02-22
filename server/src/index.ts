@@ -16,13 +16,8 @@ import { MyContext } from "./types";
 async function main() {
   const SESSION_SECRET = getenv("LIREDDIT_SESSION_SECRET");
 
-  const orm = await MikroORM.init({
-    ...MIKRO_CONFIG,
-    type: "postgresql",
-    dbName: getenv("LIREDDIT_DB_DATABASE"),
-    user: getenv("LIREDDIT_DB_USER"),
-    password: getenv("LIREDDIT_DB_PWD"),
-  });
+  // mikro config uses values from environment variables on import
+  const orm = await MikroORM.init(MIKRO_CONFIG);
   await orm.getMigrator().up();
 
   const app = express();
