@@ -1,5 +1,6 @@
 import argon2 from "argon2";
 import normalizeEmail from "normalize-email";
+import { validateRegistration } from "src/utils/validateRegistration";
 import {
   Arg,
   Ctx,
@@ -13,7 +14,6 @@ import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
 import { UsernamePasswordInput } from "../types/UsernamePasswordInput";
-import { validateEmail } from "../utils/validateEmail";
 
 // Benchmark time for 1 hash:
 // ~1050ms on my 12 thread system
@@ -65,39 +65,7 @@ export class UserResolver {
     { email, username, password }: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    const errors = [];
-
-    if (username.length <= 2) {
-      errors.push({
-        field: "username",
-        message: "Username must be at least 3 characters",
-      });
-    }
-    if (username.length >= 50) {
-      errors.push({
-        field: "username",
-        message: "Username must be shorter than 50 characters",
-      });
-    }
-    if (username.includes("@")) {
-      errors.push({
-        field: "username",
-        message: "Username cannot include an @ sign",
-      });
-    }
-
-    if (password.length <= 3) {
-      errors.push({
-        field: "password",
-        message: "Password must be at least 4 characters",
-      });
-    }
-
-    // TODO: Check for gmail-style plus sign duplication
-    // https://www.npmjs.com/package/normalize-email
-    if (!validateEmail(email)) {
-      errors.push({ field: "email", message: "Invalid email" });
-    }
+    const errors = validateRegistration({ email, username, password });
 
     if (errors.length) return { errors };
 
