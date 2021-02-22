@@ -12,6 +12,7 @@ import {
 import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
+import { validateEmail } from "../utils/validateEmail";
 
 // Benchmark time for 1 hash:
 // ~1050ms on my 12 thread system
@@ -28,6 +29,9 @@ const argon2Config: argon2.Options & { raw: false } = {
 
 @InputType()
 export class UsernamePasswordInput {
+  @Field()
+  email: string;
+
   @Field()
   username: string;
 
@@ -69,7 +73,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("options")
-    { username, password }: UsernamePasswordInput,
+    { email, username, password }: UsernamePasswordInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     if (username.length <= 2) {
@@ -104,6 +108,14 @@ export class UserResolver {
       };
     }
 
+    // TODO: Check for gmail-style plus sign duplication
+    // https://www.npmjs.com/package/normalize-email
+    if (!validateEmail(email)) {
+      return {
+        errors: [{ field: "email", message: "Invalid email" }],
+      };
+    }
+
     const hashedPassword = await argon2.hash(password, argon2Config);
     const user = await em.create(User, {
       username,
@@ -133,6 +145,7 @@ export class UserResolver {
     return { user };
   }
 
+  // TODO: Allow login with email instead of username?
   @Mutation(() => UserResponse)
   async login(
     @Arg("options") { username, password }: UsernamePasswordInput,
