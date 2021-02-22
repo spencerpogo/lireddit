@@ -1,4 +1,5 @@
 import argon2 from "argon2";
+import normalizeEmail from "normalize-email";
 import {
   Arg,
   Ctx,
@@ -106,9 +107,12 @@ export class UserResolver {
 
     if (errors.length) return { errors };
 
+    // Don't allow people with gmail addresses to make infinite accounts
+    const normalizedEmail = normalizeEmail(email);
+
     const hashedPassword = await argon2.hash(password, argon2Config);
     const user = await em.create(User, {
-      email,
+      email: normalizedEmail,
       username,
       password: hashedPassword,
     });
