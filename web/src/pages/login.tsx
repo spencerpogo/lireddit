@@ -20,24 +20,24 @@ export const Login: FC<LoginProps> = ({}: LoginProps) => {
   return (
     <Wrapper small={true}>
       <Formik
-        initialValues={{ username: "", password: "" }}
+        initialValues={{ usernameOrEmail: "", password: "" }}
         onSubmit={async (values, { setErrors }) => {
           console.log(values);
-          const response = await login({ options: values });
+          const response = await login(values);
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
           } else if (response.data?.login.user) {
             router.push("/");
           } else {
-            setErrors({ username: "Unexpected response from server" });
+            setErrors({ usernameOrEmail: "Unexpected response from server" });
           }
         }}
       >
         {({ isSubmitting }) => (
           <Form>
             <InputField
-              name="username"
-              placeholder="username"
+              name="usernameOrEmail"
+              placeholder="username or email"
               label="Username"
             />
             <Box mt="4">
