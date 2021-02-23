@@ -33,7 +33,7 @@ export const NavBar: FC<NavBarProps> = ({}: NavBarProps) => {
         <NextLink href="/login">
           <Link mr="2">Login</Link>
         </NextLink>
-        <NextLink href="/login">
+        <NextLink href="/register">
           <Link>Register</Link>
         </NextLink>
       </>
