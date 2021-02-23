@@ -9,7 +9,12 @@ import {
   Query,
   Resolver,
 } from "type-graphql";
-import { COOKIE_NAME } from "../constants";
+import { v4 as uuidv4 } from "uuid";
+import {
+  COOKIE_NAME,
+  FORGOT_PASSWORD_REDIS_PREFIX,
+  FORGOT_PASSWORD_VALID_TIME_MS,
+} from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
 import { RegistrationInput } from "../types/RegistrationInput";
@@ -48,6 +53,34 @@ export class UserResponse {
 
 @Resolver()
 export class UserResolver {
+  @Mutation(() => Boolean)
+  async forgotPassword(
+    @Ctx() { em, redis }: MyContext,
+    @Arg("email") email: string,
+    @Arg("username") username: string
+  ): Promise<boolean> {
+    // TODO: Ratelimit this!!! Code should expire after a few hours and there should
+    //  only ever be one valid code per user account
+    // TODO: HCaptcha this!!
+    // TODO: Return immediately and setImmediate the real logic to prevent email
+    //  enumeration through timing based attacks
+
+    const user = await em.findOne(User, { email });
+    if (!user) return true;
+
+    const token = uuidv4();
+    redis.set(
+      FORGOT_PASSWORD_REDIS_PREFIX + token,
+      user.id,
+      "ex",
+      FORGOT_PASSWORD_VALID_TIME_MS
+    );
+
+    // TODO: Send the email
+
+    return true;
+  }
+
   @Query(() => User, { nullable: true })
   async me(@Ctx() { em, req }: MyContext): Promise<User | null> {
     if (!req.session.userId) {
