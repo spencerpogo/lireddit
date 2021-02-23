@@ -17,6 +17,7 @@ export const Register: FC<RegisterProps> = ({}: RegisterProps) => {
   const [, register] = useRegisterMutation();
   const [passwordShown, setPasswordShown] = useState<boolean>(false);
 
+  // TODO: Show "Register" heading here and add a link to login
   return (
     <Wrapper small={true}>
       <Formik
