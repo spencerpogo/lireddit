@@ -1,15 +1,17 @@
 import { MikroORM } from "@mikro-orm/core";
-import getenv from "getenv";
 import path from "path";
+import CONFIG from "./config";
 import { __PROD__ } from "./constants";
 import { Post } from "./entities/Post";
 import { User } from "./entities/User";
 
 export const MIKRO_CONFIG: Parameters<typeof MikroORM.init>[0] = {
   type: "postgresql",
-  dbName: getenv("LIREDDIT_DB_DATABASE"),
-  user: getenv("LIREDDIT_DB_USER"),
-  password: getenv("LIREDDIT_DB_PWD"),
+  host: CONFIG.db.host,
+  port: CONFIG.db.port,
+  dbName: CONFIG.db.dbName,
+  user: CONFIG.db.user,
+  password: CONFIG.db.password,
   entities: [Post, User],
   debug: !__PROD__,
   migrations: {

@@ -3,9 +3,9 @@ import { ApolloServer } from "apollo-server-express";
 import connectRedis from "connect-redis";
 import express from "express";
 import session from "express-session";
-import getenv from "getenv";
 import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
+import { CONFIG } from "./config";
 import { COOKIE_NAME, __PROD__ } from "./constants";
 import MIKRO_CONFIG from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
@@ -14,8 +14,6 @@ import { UserResolver } from "./resolvers/user";
 import { MyContext } from "./types";
 
 async function main() {
-  const SESSION_SECRET = getenv("LIREDDIT_SESSION_SECRET");
-
   // mikro config uses values from environment variables on import
   const orm = await MikroORM.init(MIKRO_CONFIG);
   await orm.getMigrator().up();
@@ -42,7 +40,7 @@ async function main() {
         sameSite: "lax", // CSRF
         secure: __PROD__, // Should cookie only work over HTTPS
       },
-      secret: SESSION_SECRET,
+      secret: CONFIG.sessionSecret,
       saveUninitialized: false,
       resave: false,
     })
@@ -60,11 +58,10 @@ async function main() {
 
   apolloServer.applyMiddleware({
     app,
-    cors: { origin: "http://localhost:3000", credentials: true },
+    cors: { origin: CONFIG.frontendUrl, credentials: true },
   });
 
-  const port = getenv.int("LIREDDIT_PORT", 4000);
-  const iface = getenv("LIREDDIT_IFACE", "127.0.0.1");
+  const { port, iface } = CONFIG;
   app.listen(port, iface, () => {
     console.log(`Server started on http://${iface}:${port}`);
   });
