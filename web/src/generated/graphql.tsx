@@ -44,6 +44,7 @@ export type User = {
   createdAt: Scalars['DateTime'];
   updatedAt: Scalars['DateTime'];
   username: Scalars['String'];
+  email: Scalars['String'];
 };
 
 export type Mutation = {
@@ -74,12 +75,13 @@ export type MutationDeletePostArgs = {
 
 
 export type MutationRegisterArgs = {
-  options: UsernamePasswordInput;
+  options: RegistrationInput;
 };
 
 
 export type MutationLoginArgs = {
-  options: UsernamePasswordInput;
+  password: Scalars['String'];
+  usernameOrEmail: Scalars['String'];
 };
 
 export type UserResponse = {
@@ -94,7 +96,8 @@ export type FieldError = {
   message: Scalars['String'];
 };
 
-export type UsernamePasswordInput = {
+export type RegistrationInput = {
+  email: Scalars['String'];
   username: Scalars['String'];
   password: Scalars['String'];
 };
@@ -105,7 +108,8 @@ export type UserFragmentFragment = (
 );
 
 export type LoginMutationVariables = Exact<{
-  options: UsernamePasswordInput;
+  usernameOrEmail: Scalars['String'];
+  password: Scalars['String'];
 }>;
 
 
@@ -143,8 +147,7 @@ export type MeQuery = (
 );
 
 export type RegisterMutationVariables = Exact<{
-  username: Scalars['String'];
-  password: Scalars['String'];
+  options: RegistrationInput;
 }>;
 
 
@@ -180,8 +183,8 @@ export const UserFragmentFragmentDoc = gql`
 }
     `;
 export const LoginDocument = gql`
-    mutation Login($options: UsernamePasswordInput!) {
-  login(options: $options) {
+    mutation Login($usernameOrEmail: String!, $password: String!) {
+  login(usernameOrEmail: $usernameOrEmail, password: $password) {
     user {
       ...UserFragment
     }
@@ -217,8 +220,8 @@ export function useMeQuery(options: Omit<Urql.UseQueryArgs<MeQueryVariables>, 'q
   return Urql.useQuery<MeQuery>({ query: MeDocument, ...options });
 };
 export const RegisterDocument = gql`
-    mutation Register($username: String!, $password: String!) {
-  register(options: {username: $username, password: $password}) {
+    mutation Register($options: RegistrationInput!) {
+  register(options: $options) {
     user {
       ...UserFragment
     }
