@@ -119,6 +119,7 @@ export class UserResolver {
     if (!user) {
       // This allows enumeration of usernames, but profiles are public anyway so it's
       //  not a security problem
+      // TODO: Maybe don't do this because it now allows email enumeration
       return {
         errors: [
           {
