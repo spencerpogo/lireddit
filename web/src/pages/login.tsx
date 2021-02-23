@@ -38,7 +38,7 @@ export const Login: FC<LoginProps> = ({}: LoginProps) => {
             <InputField
               name="usernameOrEmail"
               placeholder="username or email"
-              label="Username"
+              label="Username or Email"
             />
             <Box mt="4">
               <InputField
