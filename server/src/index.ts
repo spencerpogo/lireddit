@@ -4,7 +4,7 @@ import connectRedis from "connect-redis";
 import express from "express";
 import session from "express-session";
 import getenv from "getenv";
-import redis from "redis";
+import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
 import { COOKIE_NAME, __PROD__ } from "./constants";
 import MIKRO_CONFIG from "./mikro-orm.config";
@@ -23,13 +23,16 @@ async function main() {
   const app = express();
 
   const RedisStore = connectRedis(session);
-  const redisClient = redis.createClient();
+  const redis = new Redis();
 
   app.use(
     session({
       name: COOKIE_NAME,
       store: new RedisStore({
-        client: redisClient,
+        // This is safe because the type error is only caused by the versions of
+        //  @types/ioredis are different between the root and @types/connect-redis's
+        //  node_modules. An ioredis instance is valid here.
+        client: redis as any,
         disableTouch: true,
         disableTTL: true,
       }),
@@ -52,7 +55,7 @@ async function main() {
   const apolloServer = new ApolloServer({
     schema,
     tracing: !__PROD__,
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res }),
+    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
   });
 
   apolloServer.applyMiddleware({
