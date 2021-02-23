@@ -116,29 +116,20 @@ export class UserResolver {
         : { username: usernameOrEmail }
     );
 
+    const badCredsError = {
+      field: "usernameOrEmail",
+      message: "Those credentials do not match",
+    };
     if (!user) {
-      // This allows enumeration of usernames, but profiles are public anyway so it's
-      //  not a security problem
-      // TODO: Maybe don't do this because it now allows email enumeration
       return {
-        errors: [
-          {
-            field: "usernameOrEmail",
-            message: "That username doesn't exist",
-          },
-        ],
+        errors: [badCredsError],
       };
     }
 
     const isValid = await argon2.verify(user.password, password);
     if (!isValid) {
       return {
-        errors: [
-          {
-            field: "password",
-            message: "Incorrect password",
-          },
-        ],
+        errors: [badCredsError],
       };
     }
 
