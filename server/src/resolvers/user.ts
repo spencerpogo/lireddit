@@ -1,6 +1,5 @@
 import argon2 from "argon2";
 import normalizeEmail from "normalize-email";
-import { validateRegistration } from "src/utils/validateRegistration";
 import {
   Arg,
   Ctx,
@@ -14,6 +13,7 @@ import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
 import { RegistrationInput } from "../types/RegistrationInput";
+import { validateRegistration } from "../utils/validateRegistration";
 
 // Benchmark time for 1 hash:
 // ~1050ms on my 12 thread system
