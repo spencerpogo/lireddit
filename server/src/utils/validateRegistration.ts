@@ -1,12 +1,12 @@
 import { FieldError } from "src/resolvers/user";
-import { UsernamePasswordInput } from "../types/UsernamePasswordInput";
+import { RegistrationInput } from "../types/RegistrationInput";
 import { validateEmail } from "./validateEmail";
 
 export function validateRegistration({
   email,
   username,
   password,
-}: UsernamePasswordInput): FieldError[] {
+}: RegistrationInput): FieldError[] {
   const errors = [];
 
   if (username.length <= 2) {

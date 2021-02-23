@@ -13,7 +13,7 @@ import {
 import { COOKIE_NAME } from "../constants";
 import { User } from "../entities/User";
 import { MyContext } from "../types";
-import { UsernamePasswordInput } from "../types/UsernamePasswordInput";
+import { RegistrationInput } from "../types/RegistrationInput";
 
 // Benchmark time for 1 hash:
 // ~1050ms on my 12 thread system
@@ -62,7 +62,7 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg("options")
-    { email, username, password }: UsernamePasswordInput,
+    { email, username, password }: RegistrationInput,
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
     const errors = validateRegistration({ email, username, password });
