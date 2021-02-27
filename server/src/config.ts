@@ -3,7 +3,9 @@ import { ENV_PREFIX } from "./constants";
 function getenv(key: string): string {
   const val = process.env[ENV_PREFIX + key];
   if (!val) {
-    throw new Error(`Missing required environment variable: ${key}`);
+    throw new Error(
+      `Missing required environment variable: ${ENV_PREFIX + key}`
+    );
   }
   return val;
 }
