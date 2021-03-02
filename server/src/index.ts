@@ -7,6 +7,7 @@ import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
 import { CONFIG } from "./config";
 import { COOKIE_NAME, __PROD__ } from "./constants";
+import { renderEmail } from "./emails/render";
 import MIKRO_CONFIG from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
@@ -67,4 +68,6 @@ async function main() {
   });
 }
 
-main();
+//main();
+
+renderEmail();

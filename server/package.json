@@ -40,6 +40,7 @@
     "express-session": "^1.17.1",
     "graphql": "^15.5.0",
     "ioredis": "^4.22.0",
+    "juice": "^7.0.0",
     "nodemailer": "^6.4.18",
     "normalize-email": "^1.1.1",
     "pg": "^8.5.1",
