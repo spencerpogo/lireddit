@@ -6,8 +6,13 @@ import session from "express-session";
 import Redis from "ioredis";
 import { buildSchema } from "type-graphql";
 import { CONFIG } from "./config";
-import { COOKIE_NAME, __PROD__ } from "./constants";
-import { renderEmail } from "./emails/render";
+import {
+  COOKIE_NAME,
+  FORGOT_PASSWORD_FRONTEND_ROUTE,
+  FRONTEND_URL,
+  __PROD__,
+} from "./constants";
+import { forgotPassword, renderEmail } from "./emails/render";
 import MIKRO_CONFIG from "./mikro-orm.config";
 import { HelloResolver } from "./resolvers/hello";
 import { PostResolver } from "./resolvers/post";
@@ -70,4 +75,10 @@ async function main() {
 
 //main();
 
-renderEmail();
+console.log(
+  renderEmail(forgotPassword, {
+    username: "bob",
+    email: "bob@bob.com",
+    resetUrl: FRONTEND_URL + FORGOT_PASSWORD_FRONTEND_ROUTE + "abcdef",
+  })
+);

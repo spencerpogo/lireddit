@@ -1,0 +1,19 @@
+extends ../base.pug
+
+block styles
+  style.
+    .indent {
+      margin-left: 15px;
+    }
+
+block content
+  +ln Dear #{SITE_NAME} user,
+  +ln.
+    Somebody (hopefully you) requested a password reset for the lireddit account
+    for #[+email_link(email)]. No changes have been made to your account yet.
+  +ln You can reset your password by clicking the link below. The link is only valid for #{RESET_TIME}.
+  +ln.indent #[+copyable_link(resetUrl)]
+  //- TODO: Add support contact here.
+  +ln If you did not request this password reset, you can safely ignore this email.
+  +ln Yours,
+  +ln The #{SITE_NAME} Team
