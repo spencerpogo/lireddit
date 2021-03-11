@@ -3,7 +3,8 @@ import { process as declassify } from "declassify";
 import { htmlToText } from "html-to-text";
 import juice from "juice";
 import { join as pathJoin } from "path";
-import { compileFile, compileTemplate } from "pug";
+import { compileFile } from "pug";
+import { Email, EmailTemplate } from "src/types/mail";
 import {
   FORGOT_PASSWORD_VALID_TIME_HUMAN_READABLE as RESET_TIME,
   SITE_NAME,
@@ -12,17 +13,6 @@ import {
 function compileEmailTemplate(dir: string) {
   const path = pathJoin("src", "emails", dir, "html.pug");
   return compileFile(path);
-}
-
-interface EmailTemplate<T> {
-  htmlTemplate: compileTemplate;
-  getSubject: (locals: T) => string;
-}
-
-interface Email {
-  subject: string;
-  html: string;
-  text: string;
 }
 
 export const forgotPassword: EmailTemplate<{}> = {
