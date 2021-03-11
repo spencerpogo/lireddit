@@ -1,5 +1,6 @@
 //import juice from "juice";
 import { process as declassify } from "declassify";
+import { htmlToText } from "html-to-text";
 import juice from "juice";
 import { join as pathJoin } from "path";
 import { compileFile, compileTemplate } from "pug";
@@ -21,6 +22,7 @@ interface EmailTemplate<T> {
 interface Email {
   subject: string;
   html: string;
+  text: string;
 }
 
 export const forgotPassword: EmailTemplate<{}> = {
@@ -41,5 +43,6 @@ export function renderEmail<T>(template: EmailTemplate<T>, locals: T): Email {
     )
   );
   const subject = forgotPassword.getSubject(locals);
-  return { subject, html };
+  const text = htmlToText(html);
+  return { subject, html, text };
 }
