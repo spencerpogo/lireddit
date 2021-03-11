@@ -2,7 +2,7 @@
 import { process as declassify } from "declassify";
 import juice from "juice";
 import { join as pathJoin } from "path";
-import { compileFile, compileTemplate, LocalsObject } from "pug";
+import { compileFile, compileTemplate } from "pug";
 import {
   FORGOT_PASSWORD_VALID_TIME_HUMAN_READABLE as RESET_TIME,
   SITE_NAME,
@@ -13,13 +13,33 @@ function compileEmailTemplate(dir: string) {
   return compileFile(path);
 }
 
-export const forgotPassword: compileTemplate = compileEmailTemplate(
-  "forgot-password"
-);
+interface EmailTemplate<T> {
+  htmlTemplate: compileTemplate;
+  getSubject: (locals: T) => string;
+}
 
-export function renderEmail(template: compileTemplate, locals: LocalsObject) {
+interface Email {
+  subject: string;
+  html: string;
+}
+
+export const forgotPassword: EmailTemplate<{}> = {
+  htmlTemplate: compileEmailTemplate("forgot-password"),
+  getSubject: () => "Lireddit Password Reset",
+};
+
+export function renderEmail<T>(template: EmailTemplate<T>, locals: T): Email {
   const COPYRIGHT_YEAR = new Date().getUTCFullYear();
-  return declassify(
-    juice(template({ SITE_NAME, COPYRIGHT_YEAR, RESET_TIME, ...locals }))
+  const html = declassify(
+    juice(
+      template.htmlTemplate({
+        SITE_NAME,
+        COPYRIGHT_YEAR,
+        RESET_TIME,
+        ...locals,
+      })
+    )
   );
+  const subject = forgotPassword.getSubject(locals);
+  return { subject, html };
 }
